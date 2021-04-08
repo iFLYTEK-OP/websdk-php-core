@@ -1,6 +1,6 @@
 # 讯飞开放平台AI能力-PHPSDK核心库
 
-[![Build Status](https://www.travis-ci.com/wowo-zZ/ppsdk-core.svg?branch=master)](https://www.travis-ci.com/wowo-zZ/ppsdk-core)[![codecov](https://codecov.io/gh/wowo-zZ/ppsdk-core/branch/master/graph/badge.svg?token=PN32J0RJRZ)](https://codecov.io/gh/wowo-zZ/ppsdk-core)
+[![Build Status](https://travis-ci.com/iFLYTEK-OP/websdk-php-core.svg?branch=master)](https://travis-ci.com/iFLYTEK-OP/websdk-php-core)[![codecov](https://codecov.io/gh/iFLYTEK-OP/websdk-php-core/branch/master/graph/badge.svg?token=F17Q99V6IH)](https://codecov.io/gh/iFLYTEK-OP/websdk-php-core)
 
 提供各种AI能力PHPSDK的基础组件。
 
