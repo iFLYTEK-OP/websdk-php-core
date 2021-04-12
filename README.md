@@ -7,5 +7,5 @@
 ### 安装
 **注意：本库仅作为其他AI能力库的依赖，并不直接使用。**
 ```sh
-composer require IFlytek/Xfyun/Core
+composer require iflytekop/xfyun-core
 ```
