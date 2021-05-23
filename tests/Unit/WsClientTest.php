@@ -5,12 +5,14 @@ namespace IFlytek\Xfyun\Core\Tests\Unit;
 use IFlytek\Xfyun\Core\WsClient;
 use IFlytek\Xfyun\Core\Handler\WsHandler;
 use IFlytek\Xfyun\Core\Traits\SignTrait;
+use IFlytek\Xfyun\Core\Traits\JsonTrait;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Yaml\Yaml;
 
 class WsClientTest extends TestCase
 {
     use SignTrait;
+    use JsonTrait;
 
     public function testWsClientRequestSuccessfullySendAndReceive()
     {
@@ -50,5 +52,29 @@ class WsClientTest extends TestCase
             ]
         );
         $result = $client->sendAndReceive();
+    }
+
+    public function testWsClientSendAndReceive()
+    {
+        $credentials = array_merge(
+            Yaml::parseFile(__DIR__ . '/./credentials.yml'),
+            [
+                'appId' => getenv('PHPSDK_CORE_APPID'),
+                'apiKey' => getenv('PHPSDK_CORE_APIKEY'),
+                'apiSecret' => getenv('PHPSDK_CORE_APISECRET')
+            ]
+        );
+
+        $client = new WsClient(
+            [
+                'handler' => new WsHandler(
+                    $this->signUriV1('wss://tts-api.xfyun.cn/v2/tts', $credentials),
+                    $credentials['input']
+                )
+            ]
+        );
+        $this->assertNull($client->send());
+        $result = $this->jsonDecode($client->receive());
+        $this->assertEquals($result->code, 0);
     }
 }

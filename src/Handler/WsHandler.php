@@ -33,25 +33,20 @@ class WsHandler
     use JsonTrait;
 
     /**
-     * @var string 请求uri
+     * @var WebSocket\Client ws client
      */
-    private $uri;
+    private $client;
 
     /**
      * @var string 发送的字符串
      */
     private $input;
 
-    /**
-     * @var int 超时时间
-     */
-    private $timeout;
-
     public function __construct($uri, $input, $timeout = 3)
     {
-        $this->uri = $uri;
+        $this->client = new Client($uri);
+        $this->client->setTimeout($timeout);
         $this->input = $input;
-        $this->timeout = $timeout;
     }
 
     /**
@@ -63,11 +58,9 @@ class WsHandler
     {
         $result = '';
         try {
-            $client = new Client($this->uri);
-            $client->setTimeout($this->timeout);
-            $client->send($this->input);
+            $this->client->send($this->input);
             while (true) {
-                $message = $this->jsonDecode($client->receive());
+                $message = $this->jsonDecode($this->client->receive());
                 if ($message->code !== 0) {
                     throw new \Exception('error receive');
                 }
@@ -81,6 +74,31 @@ class WsHandler
                 }
             }
             return new Response(200, [], $result);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+    }
+
+    public function send($message = null)
+    {
+        try {
+            if (empty($message)) {
+                if (!empty($this->input)) {
+                    $message = $this->input;
+                } else {
+                    throw new Exception();
+                }
+            }
+            return $this->client->send($message);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+    }
+
+    public function receive()
+    {
+        try {
+            return $this->client->receive();
         } catch (Exception $ex) {
             throw $ex;
         }

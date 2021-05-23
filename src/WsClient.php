@@ -49,4 +49,22 @@ class WsClient
             throw $ex;
         }
     }
+
+    public function send($message = null)
+    {
+        try {
+            return call_user_func_array([$this->handler, 'send'], [$message]);
+        } catch (\Exception $ex) {
+            throw $ex;
+        }
+    }
+
+    public function receive()
+    {
+        try {
+            return call_user_func_array([$this->handler, 'receive'], []);
+        } catch (\Exception $ex) {
+            throw $ex;
+        }
+    }
 }
