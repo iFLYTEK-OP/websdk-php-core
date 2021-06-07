@@ -19,3 +19,6 @@ clover.xml
 
 # vscode
 .vscode
+
+# phpstorm
+.idea

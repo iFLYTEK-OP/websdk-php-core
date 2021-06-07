@@ -2,6 +2,8 @@
 
 namespace IFlytek\Xfyun\Core\Tests\Unit\Traits;
 
+use GuzzleHttp\Psr7\Request;
+use IFlytek\Xfyun\Core\HttpClient;
 use IFlytek\Xfyun\Core\Traits\SignTrait;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Yaml\Yaml;
@@ -35,5 +37,26 @@ class SignTraitTest extends TestCase
             'IrrzsJeOFk1NGfJHW6SkHUoN9CU=',
             $this->signV1('595f23df', 'd9f4aa7ea6d94faca62cd88a28fd5234', '1512041814')
         );
+    }
+
+    public function testSuccessfullySignV2()
+    {
+        $this->assertNotNull(getenv('PHPSDK_CORE_APPID'));
+        $this->assertNotNull(getenv('PHPSDK_CORE_QBH_SECRETKEY'));
+        $result = $this->signV2(
+            getenv('PHPSDK_CORE_APPID'),
+            getenv('PHPSDK_CORE_QBH_SECRETKEY'),
+            '{"aue":"raw","sample_rate":"16000"}'
+        );
+        $this->assertEquals(getenv('PHPSDK_CORE_APPID'), $result['X-Appid']);
+        $this->assertEquals('eyJhdWUiOiJyYXciLCJzYW1wbGVfcmF0ZSI6IjE2MDAwIn0=', $result['X-Param']);
+        $client = new HttpClient([
+            'httpHeaders' => $result
+        ]);
+        $result = $client->sendAndReceive(
+            new Request('POST', 'https://webqbh.xfyun.cn/v1/service/v1/qbh')
+        )->getBody()->getContents();
+        // 返回数据非法则表示鉴权通过
+        $this->assertTrue(strpos($result, 'invalid data') > 0);
     }
 }
