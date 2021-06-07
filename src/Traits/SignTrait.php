@@ -35,7 +35,6 @@ trait SignTrait
      */
     private static function signUriV1($uri, $secret)
     {
-        $appid = $secret['appId'];
         $apiKey = $secret['apiKey'];
         $apiSecret = $secret['apiSecret'];
         $host = $secret['host'];
@@ -69,5 +68,27 @@ trait SignTrait
         $baseString = $appId . $timestamp;
         $signa_origin = hash_hmac('sha1', md5($baseString), $secretKey, true);
         return base64_encode($signa_origin);
+    }
+
+    /**
+     * https调用的鉴权参数构造
+     *
+     * @param   string  $appId      appId
+     * @param   string  $apiKey     apiKey
+     * @param   string  $curTime    curTime
+     * @param   string  $param      param
+     * @return  array
+     */
+    public static function signV2($appId, $apiKey, $param, $curTime = null)
+    {
+        if (empty($curTime)) {
+            $curTime = time();
+        }
+        return [
+            'X-Appid' => $appId,
+            'X-CurTime' => $curTime,
+            'X-Param' => base64_encode($param),
+            'X-CheckSum' => md5($apiKey . $curTime . $param)
+        ];
     }
 }

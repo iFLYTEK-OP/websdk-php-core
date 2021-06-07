@@ -36,7 +36,6 @@ class JsonTraitTest extends TestCase
             $this->jsonEncode($ch);
         } catch (\Error $e) {
             curl_close($ch);
-            throw $ch;
         }
     }
 }

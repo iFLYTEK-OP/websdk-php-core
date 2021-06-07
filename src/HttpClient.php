@@ -23,6 +23,11 @@ namespace IFlytek\Xfyun\Core;
  *
  * @author guizheng@iflytek.com
  */
+
+use Exception;
+use GuzzleHttp\Psr7\Response;
+use IFlytek\Xfyun\Core\Handler\Guzzle6HttpHandler;
+use IFlytek\Xfyun\Core\Handler\Guzzle7HttpHandler;
 use IFlytek\Xfyun\Core\Traits\SignTrait;
 use IFlytek\Xfyun\Core\Traits\DecideRetryTrait;
 use IFlytek\Xfyun\Core\Handler\HttpHandlerFactory;
@@ -84,6 +89,7 @@ class HttpClient
         ];
 
         $this->httpHandler = $config['httpHandler'] ?: HttpHandlerFactory::build();
+        $this->httpHeaders = $config['httpHeaders'];
         $this->retries = $config['retries'];
         $this->decideRetryFunction = $config['decideRetryFunction'] ?: $this->getDecideRetryFunction();
         $this->calcDelayFunction = $config['calcDelayFunction'] ?: [$this, 'calculateDelay'];
@@ -95,9 +101,10 @@ class HttpClient
     /**
      * 发送请求，并接受返回
      *
-     * @param   RequestInterface    @request    请求对象
-     * @param   array               $options    请求的配置参数
+     * @param   RequestInterface $request
+     * @param   array $options 请求的配置参数
      * @return  Response
+     * @throws  Exception
      */
     public function sendAndReceive(RequestInterface $request, array $options = [])
     {
@@ -105,12 +112,11 @@ class HttpClient
             $delayFunction = $this->delayFunction;
             $calcDelayFunction = $this->calcDelayFunction;
             $retryAttempt = 0;
-            $exception = null;
 
             while (true) {
                 try {
                     return call_user_func_array($this->httpHandler, [$this->applyHeaders($request), $options]);
-                } catch (\Exception $exception) {
+                } catch (Exception $exception) {
                     if ($this->decideRetryFunction) {
                         if (!call_user_func($this->decideRetryFunction, $exception)) {
                             throw $exception;
@@ -127,7 +133,7 @@ class HttpClient
             }
 
             throw $exception;
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             throw $ex;
         }
     }
