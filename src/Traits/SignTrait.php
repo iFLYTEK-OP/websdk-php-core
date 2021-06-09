@@ -88,7 +88,7 @@ trait SignTrait
             'X-Appid' => $appId,
             'X-CurTime' => $curTime,
             'X-Param' => base64_encode($param),
-            'X-CheckSum' => md5($apiKey . $curTime . $param)
+            'X-CheckSum' => md5($apiKey . $curTime . base64_encode($param))
         ];
     }
 }
