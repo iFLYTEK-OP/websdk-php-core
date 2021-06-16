@@ -42,7 +42,7 @@ class WsHandler
      */
     private $input;
 
-    public function __construct($uri, $input, $timeout = 3)
+    public function __construct($uri, $input, $timeout = 300)
     {
         $this->client = new Client($uri);
         $this->client->setTimeout($timeout);
