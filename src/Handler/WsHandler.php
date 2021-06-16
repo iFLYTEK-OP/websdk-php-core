@@ -62,7 +62,7 @@ class WsHandler
             while (true) {
                 $message = $this->jsonDecode($this->client->receive());
                 if ($message->code !== 0) {
-                    throw new \Exception('error receive');
+                    throw new \Exception(json_encode($message));
                 }
                 switch ($message->data->status) {
                     case 1:
