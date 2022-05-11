@@ -48,7 +48,7 @@ class WsHandler implements LoggerAwareInterface
      */
     private $logger;
 
-    public function __construct($uri, $input, $logger = null, $timeout = 300)
+    public function __construct($uri, $input, $timeout = 300, $logger = null)
     {
         $this->client = new Client($uri);
         $this->client->setTimeout($timeout);

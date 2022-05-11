@@ -35,6 +35,7 @@ class WsClientTest extends TestCase
                 'handler' => new WsHandler(
                     $this->signUriV1('wss://tts-api.xfyun.cn/v2/tts', $credentials),
                     $credentials['input'],
+                    300,
                     $logger
                 )
             ]
