@@ -22,13 +22,14 @@ use IFlytek\Xfyun\Core\Traits\JsonTrait;
 use WebSocket\Client;
 use WebSocket\Exception;
 use GuzzleHttp\Psr7\Response;
+use Psr\Log\{LoggerAwareInterface, LoggerInterface, NullLogger};
 
 /**
  * WebSocket处理类
  *
  * @author guizheng@iflytek.com
  */
-class WsHandler
+class WsHandler implements LoggerAwareInterface
 {
     use JsonTrait;
 
@@ -42,11 +43,17 @@ class WsHandler
      */
     private $input;
 
-    public function __construct($uri, $input, $timeout = 300)
+    /**
+     * @var LoggerInterface or null 日志处理
+     */
+    private $logger;
+
+    public function __construct($uri, $input, $logger = null, $timeout = 300)
     {
         $this->client = new Client($uri);
         $this->client->setTimeout($timeout);
         $this->input = $input;
+        $this->logger = $logger ?: new NullLogger();
     }
 
     /**
@@ -64,6 +71,7 @@ class WsHandler
                 if ($message->code !== 0) {
                     throw new \Exception(json_encode($message));
                 }
+                $this->logger->info("Receiving data, sid-[{$message->sid}]");
                 switch ($message->data->status) {
                     case 1:
                         $result .= base64_decode($message->data->audio);
@@ -103,4 +111,10 @@ class WsHandler
             throw $ex;
         }
     }
+
+    public function setLogger(LoggerInterface $logger = null)
+    {
+        $this->logger = $logger ?: new NullLogger();
+    }
+
 }

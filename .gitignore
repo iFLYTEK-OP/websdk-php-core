@@ -13,6 +13,7 @@ tests/output
 coverageOutput
 coverage.xml
 clover.xml
+*.log
 
 # mac
 .DS_Store

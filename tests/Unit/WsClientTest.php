@@ -8,6 +8,8 @@ use IFlytek\Xfyun\Core\Traits\SignTrait;
 use IFlytek\Xfyun\Core\Traits\JsonTrait;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Yaml\Yaml;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
 class WsClientTest extends TestCase
 {
@@ -25,11 +27,15 @@ class WsClientTest extends TestCase
             ]
         );
 
+
+        $logger = new Logger('my_logger');
+        $logger->pushHandler(new StreamHandler(__DIR__.'/unit.test.log', Logger::DEBUG));
         $client = new WsClient(
             [
                 'handler' => new WsHandler(
                     $this->signUriV1('wss://tts-api.xfyun.cn/v2/tts', $credentials),
-                    $credentials['input']
+                    $credentials['input'],
+                    $logger
                 )
             ]
         );
