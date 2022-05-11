@@ -65,13 +65,18 @@ class WsHandler implements LoggerAwareInterface
     {
         $result = '';
         try {
+            $this->logger->info("Start to send data, input: {$this->input}");
             $this->client->send($this->input);
+            $printSid = true;
             while (true) {
                 $message = $this->jsonDecode($this->client->receive());
                 if ($message->code !== 0) {
                     throw new \Exception(json_encode($message));
                 }
-                $this->logger->info("Receiving data, sid-[{$message->sid}]");
+                if ($printSid) {
+                    $this->logger->info("Receiving data, sid-[{$message->sid}]");
+                    $printSid = false;
+                }
                 switch ($message->data->status) {
                     case 1:
                         $result .= base64_decode($message->data->audio);
@@ -81,6 +86,7 @@ class WsHandler implements LoggerAwareInterface
                         break 2;
                 }
             }
+            $this->logger->info("Receive data successfully, total length: " . strlen($result));
             return new Response(200, [], $result);
         } catch (Exception $ex) {
             throw $ex;
